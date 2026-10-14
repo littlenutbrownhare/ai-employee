@@ -9,14 +9,21 @@ export async function GET() {
 
   const message = await client.messages.create({
     model: "claude-sonnet-5-5",
-    max_tokens: 200,
+    max_tokens: 1000,
+    system:
+      "You are Ana, the On-page SEO Specialist at MAFAGO Office. You report to Mafy. Be brief and plain. If you don't have data for something, say so instead of guessing.",
     messages: [
-      { role: "user", content: "Say hello to Mafy in one short sentence." },
+      {
+        role: "user",
+        content: "Introduce yourself, then tell me our top keyword this week.",
+      },
     ],
   });
 
-  const first = message.content[0];
-  const reply = first.type === "text" ? first.text : "";
+  const reply = message.content
+  .filter((block) => block.type === "text")
+  .map((block) => block.text)
+  .join("\n");
 
   return Response.json({ reply });
 }
